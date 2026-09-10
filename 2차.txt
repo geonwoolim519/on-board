@@ -1,0 +1,2016 @@
+# ON BOARD 2.0 — Multi-Trade Simulation Platform
+
+현재 구현되어 있는 **ON BOARD 무역 시뮬레이터 MVP를 대폭 확장해줘.**
+
+기존 MVP는 한국 → 미국 자동차 부품 수출이라는 하나의 시나리오에 제한되어 있고, Incoterms도 일부 조건만 제공하고 있다.
+
+이번 업데이트에서는 ON BOARD를 단일 시나리오가 아니라 **다양한 국제무역 거래를 반복해서 플레이할 수 있는 무역 시뮬레이션 플랫폼**으로 발전시킨다.
+
+기존 UI 디자인과 브랜드 아이덴티티는 유지하되, 데이터 구조와 거래 시스템을 확장해 재사용 가능한 구조로 리팩터링한다.
+
+---
+
+# 1. 핵심 목표
+
+ON BOARD의 핵심 경험을 다음과 같이 변경한다.
+
+기존:
+
+> 한국 → 미국 자동차 부품 수출
+
+변경:
+
+> **사용자가 다양한 무역거래 중 하나를 선택하고 직접 거래를 진행**
+
+사용자는 거래마다 서로 다른
+
+* 국가
+* 도시
+* 항구
+* 기업
+* 품목
+* 수량
+* 계약금액
+* 통화
+* 운송수단
+* Incoterms
+* 결제조건
+* 보험
+* 환율
+* 비용
+* 리스크
+
+를 경험할 수 있어야 한다.
+
+즉,
+
+**한 번 플레이하고 끝나는 앱이 아니라 여러 거래를 반복해서 플레이하는 게임**으로 만든다.
+
+---
+
+# 2. 가장 중요한 구조 변경
+
+거래 데이터를 UI 코드에 하드코딩하지 않는다.
+
+모든 거래는 **Scenario Data**로 관리한다.
+
+예를 들어:
+
+```text
+scenarios/
+├── korea-usa-auto-parts
+├── korea-japan-electronics
+├── china-korea-textiles
+├── germany-korea-machinery
+├── korea-vietnam-food
+├── usa-korea-semiconductor
+└── ...
+```
+
+또는 하나의 JSON/JS 데이터베이스 형태로 관리해도 된다.
+
+핵심은 **새로운 거래 시나리오를 데이터만 추가해서 확장할 수 있는 구조**를 만드는 것이다.
+
+---
+
+# 3. 거래 시나리오 선택 화면
+
+HOME에서 NEW TRADE를 누르면 바로 기존 한국→미국 거래로 들어가지 않는다.
+
+새로운 화면:
+
+# CHOOSE YOUR TRADE
+
+부제:
+
+> 다양한 무역거래 중 하나를 선택하세요.
+
+거래 시나리오를 카드 형태로 보여준다.
+
+각 카드에는:
+
+* 국가 국기
+* 출발국
+* 도착국
+* 품목
+* 거래 유형
+* 예상 난이도
+* 운송방식
+* Contract Value
+
+를 표시한다.
+
+예:
+
+### 🇰🇷 KOREA → 🇺🇸 USA
+
+AUTOMOTIVE PARTS
+
+Busan → Los Angeles
+
+Ocean Freight
+
+Difficulty
+★★☆☆☆
+
+Contract
+USD 100,000
+
+[START TRADE]
+
+---
+
+# 4. 시나리오를 최소 8개 이상 구현
+
+MVP 확장 버전에서는 최소 8개의 서로 다른 거래를 제공한다.
+
+다음은 기본 예시이며 필요하면 더 추가한다.
+
+---
+
+## Scenario 01
+
+### 🇰🇷 Korea → 🇺🇸 USA
+
+Automotive Parts
+
+Busan → Los Angeles
+
+운송:
+Sea
+
+통화:
+USD
+
+난이도:
+Easy
+
+특징:
+기존 시나리오를 유지한다.
+
+---
+
+## Scenario 02
+
+### 🇰🇷 Korea → 🇯🇵 Japan
+
+Consumer Electronics
+
+Busan → Yokohama
+
+운송:
+Sea
+
+통화:
+JPY
+
+난이도:
+Easy
+
+---
+
+## Scenario 03
+
+### 🇨🇳 China → 🇰🇷 Korea
+
+Textile Products
+
+Shanghai → Busan
+
+운송:
+Sea
+
+통화:
+USD
+
+난이도:
+Easy
+
+---
+
+## Scenario 04
+
+### 🇩🇪 Germany → 🇰🇷 Korea
+
+Industrial Machinery
+
+Hamburg → Busan
+
+운송:
+Sea
+
+통화:
+EUR
+
+난이도:
+Medium
+
+---
+
+## Scenario 05
+
+### 🇰🇷 Korea → 🇻🇳 Vietnam
+
+Cosmetics
+
+Busan → Ho Chi Minh City / Cat Lai
+
+운송:
+Sea
+
+통화:
+USD
+
+난이도:
+Medium
+
+---
+
+## Scenario 06
+
+### 🇺🇸 USA → 🇰🇷 Korea
+
+Semiconductor Equipment
+
+Los Angeles → Busan
+
+운송:
+Air
+
+통화:
+USD
+
+난이도:
+Hard
+
+---
+
+## Scenario 07
+
+### 🇰🇷 Korea → 🇦🇪 UAE
+
+Automotive Components
+
+Busan → Jebel Ali
+
+운송:
+Sea
+
+통화:
+USD
+
+난이도:
+Medium
+
+---
+
+## Scenario 08
+
+### 🇰🇷 Korea → 🇩🇪 Germany
+
+Display Components
+
+Busan → Hamburg
+
+운송:
+Sea
+
+통화:
+EUR
+
+난이도:
+Hard
+
+---
+
+# 5. 항구 데이터베이스를 별도로 구축
+
+항구를 특정 시나리오에 하드코딩하지 않는다.
+
+다음과 같은 Port Data를 만든다.
+
+예:
+
+```text
+Busan
+Incheon
+Gwangyang
+
+Los Angeles
+Long Beach
+New York
+Savannah
+
+Yokohama
+Tokyo
+Osaka
+
+Shanghai
+Ningbo
+Shenzhen
+
+Hamburg
+Rotterdam
+Antwerp
+
+Singapore
+Ho Chi Minh
+Jebel Ali
+
+Dubai
+```
+
+각 항구에는 최소한 다음 정보를 저장한다.
+
+* name
+* country
+* city
+* code
+* region
+* transportType
+* baseFreightMultiplier
+
+예:
+
+```text
+Busan
+Country: South Korea
+Code: KRPUS
+Region: Asia
+```
+
+실제 항만 코드가 불확실한 경우 임의의 코드를 만들어내지 말고 검증 가능한 값만 사용한다.
+
+---
+
+# 6. 출발항 / 도착항 선택 기능
+
+각 시나리오에서 사용자가 반드시 정해진 항구 하나만 사용하게 하지 않는다.
+
+가능한 거래에서는 여러 항구 중 선택할 수 있게 한다.
+
+예:
+
+### SELECT ORIGIN PORT
+
+Busan
+Incheon
+Gwangyang
+
+### SELECT DESTINATION PORT
+
+Los Angeles
+Long Beach
+New York
+Savannah
+
+단, **모든 항구 조합을 무조건 허용하지 않는다.**
+
+시나리오에서 허용된 항구만 표시한다.
+
+사용자가 항구를 변경하면:
+
+* 운임
+* 운송시간
+* 리스크
+* 예상비용
+
+등이 달라질 수 있도록 구조를 만든다.
+
+MVP에서는 실제 운임 API를 사용하지 않고 시뮬레이션용 고정 데이터를 사용한다.
+
+---
+
+# 7. 국가 데이터
+
+국가도 시나리오에 하드코딩하지 않고 데이터화한다.
+
+각 국가에는:
+
+* 국가명
+* ISO 코드
+* 통화
+* 기본 환율
+* 주요 항구
+* 지역
+
+정보를 가진다.
+
+예:
+
+South Korea
+KRW
+
+USA
+USD
+
+Japan
+JPY
+
+Germany
+EUR
+
+China
+CNY
+
+Vietnam
+VND
+
+UAE
+AED
+
+---
+
+# 8. 통화 및 환율 시스템 확장
+
+현재 USD/KRW만 지원하는 구조를 제거한다.
+
+다음 통화를 지원한다.
+
+* KRW
+* USD
+* EUR
+* JPY
+* CNY
+* VND
+* AED
+
+거래마다 계약통화를 다르게 설정할 수 있다.
+
+예:
+
+Korea → Japan
+
+Contract:
+
+JPY 15,000,000
+
+Germany → Korea
+
+Contract:
+
+EUR 100,000
+
+환율을 기준통화 KRW로 환산할 수 있도록 한다.
+
+단, MVP에서는 실제 환율 API를 사용하지 않는다.
+
+각 시나리오에 simulationExchangeRate를 저장한다.
+
+---
+
+# 9. INCOTERMS를 11개 모두 구현
+
+이 부분은 매우 중요하다.
+
+**Incoterms® 2020의 11개 조건을 모두 제공한다.**
+
+## Any Mode of Transport
+
+다음 7개:
+
+### EXW
+
+Ex Works
+
+### FCA
+
+Free Carrier
+
+### CPT
+
+Carriage Paid To
+
+### CIP
+
+Carriage and Insurance Paid To
+
+### DAP
+
+Delivered At Place
+
+### DPU
+
+Delivered at Place Unloaded
+
+### DDP
+
+Delivered Duty Paid
+
+---
+
+## Sea and Inland Waterway Transport
+
+다음 4개:
+
+### FAS
+
+Free Alongside Ship
+
+### FOB
+
+Free On Board
+
+### CFR
+
+Cost and Freight
+
+### CIF
+
+Cost Insurance and Freight
+
+---
+
+# 10. Incoterms 선택 UI
+
+11개 조건을 단순히 한 줄로 나열하지 않는다.
+
+두 그룹으로 구분한다.
+
+## ANY MODE OF TRANSPORT
+
+EXW
+FCA
+CPT
+CIP
+DAP
+DPU
+DDP
+
+---
+
+## SEA / INLAND WATERWAY
+
+FAS
+FOB
+CFR
+CIF
+
+각 카드에:
+
+* 약어
+* Full Name
+* 운송 적용범위
+* 비용 부담 범위
+* 위험 이전 시점
+* 보험 여부
+* 간단한 설명
+
+을 표시한다.
+
+---
+
+# 11. Incoterms 적용 범위 검증
+
+매우 중요한 기능.
+
+사용자가:
+
+FOB
+
+를 선택한 뒤
+
+Air Freight
+
+를 선택하면 단순 경고가 아니라:
+
+### ⚠ INCOTERMS MISMATCH
+
+FOB는 해상운송 및 내수로 운송에 사용되는 조건입니다.
+
+현재 선택한 운송수단은 항공운송입니다.
+
+이 거래에서는 FCA와 같은 모든 운송방식에 사용할 수 있는 조건을 검토해보세요.
+
+라고 표시한다.
+
+---
+
+# 12. 다른 Incoterms에도 논리 적용
+
+다음과 같은 기본 검증 로직을 구현한다.
+
+### EXW
+
+판매자의 부담 범위가 가장 작음.
+
+### FCA
+
+모든 운송방식 사용 가능.
+
+### CPT
+
+운송비는 판매자가 부담하지만 위험은 운송인에게 인도할 때 이전.
+
+### CIP
+
+CPT + 보험.
+
+### FAS
+
+해상/내수로 운송.
+
+### FOB
+
+해상/내수로 운송.
+
+### CFR
+
+해상/내수로 운송.
+
+### CIF
+
+CFR + 보험.
+
+### DAP
+
+목적지까지 운송하지만 unloading은 매수인 부담.
+
+### DPU
+
+목적지에서 unloading까지 매도인 부담.
+
+### DDP
+
+수입통관 및 관세 등을 포함하여 매도인의 부담 범위가 가장 큼.
+
+각 조건에 대한 상세 법률/계약 해석을 과도하게 단순화하지 말고, UI에서는 교육용으로 이해하기 쉽게 표현한다.
+
+---
+
+# 13. 반드시 구현할 Incoterms 비교 기능
+
+Incoterms 선택 화면에:
+
+### COMPARE TERMS
+
+버튼을 추가한다.
+
+클릭하면 11개 조건을 비교하는 Modal 또는 별도 Panel을 표시한다.
+
+비교 항목:
+
+* Transport Mode
+* Export Clearance
+* Main Carriage
+* Insurance
+* Import Clearance
+* Risk Transfer
+* Seller Cost
+* Buyer Cost
+
+11개 조건을 한눈에 비교할 수 있게 한다.
+
+---
+
+# 14. 운송수단 확장
+
+현재 Sea / Air / Land만 있는 구조라면 확장한다.
+
+### SEA
+
+Ocean Freight
+
+### AIR
+
+Air Freight
+
+### ROAD
+
+Road Transport
+
+### RAIL
+
+Rail Transport
+
+### MULTIMODAL
+
+Multimodal Transport
+
+단, 시나리오에 따라 가능한 운송수단만 표시한다.
+
+예:
+
+Semiconductor Equipment:
+
+Air / Road / Multimodal
+
+Automotive Parts:
+
+Sea / Rail / Road / Multimodal
+
+---
+
+# 15. FCL / LCL
+
+해상 컨테이너 거래에서는:
+
+FCL
+Full Container Load
+
+LCL
+Less than Container Load
+
+선택 가능하게 한다.
+
+FCL과 LCL에 따라 비용과 리스크가 달라지도록 한다.
+
+---
+
+# 16. 거래 품목 다양화
+
+자동차 부품 하나만 사용하지 않는다.
+
+최소 다음 품목을 사용한다.
+
+* Automotive Parts
+* Consumer Electronics
+* Semiconductor Equipment
+* Cosmetics
+* Textile Products
+* Industrial Machinery
+* Food Products
+* Steel Products
+* Display Components
+* Battery Components
+
+각 품목에는:
+
+* 기본 생산비
+* 부피/중량
+* 적합 운송수단
+* 기본 리스크
+* 예상 운송비
+
+등을 시뮬레이션 데이터로 설정한다.
+
+---
+
+# 17. 거래규모 다양화
+
+Contract Value도 모든 시나리오에서 USD 100,000으로 고정하지 않는다.
+
+예:
+
+USD 50,000
+
+USD 100,000
+
+USD 250,000
+
+USD 500,000
+
+EUR 150,000
+
+JPY 15,000,000
+
+등을 사용한다.
+
+---
+
+# 18. 결제조건 확장
+
+다음 결제방식을 지원한다.
+
+### T/T
+
+Telegraphic Transfer
+
+### L/C
+
+Letter of Credit
+
+### D/P
+
+Documents against Payment
+
+### D/A
+
+Documents against Acceptance
+
+각 시나리오마다 추천 결제조건과 리스크를 다르게 설정한다.
+
+예:
+
+신규 바이어 + 고액 거래:
+
+L/C 추천
+
+신뢰도가 높은 장기거래:
+
+T/T 가능
+
+D/A:
+
+Exporter Risk HIGH
+
+---
+
+# 19. 결제조건과 거래 리스크 연결
+
+사용자가 단순히 정답만 맞히는 것이 아니라 선택에 따라 Risk Score가 변경되게 한다.
+
+예:
+
+L/C
+
+Payment Risk
+LOW
+
+D/A
+
+Payment Risk
+HIGH
+
+결과 화면에서:
+
+### PAYMENT RISK
+
+LOW
+
+또는
+
+HIGH
+
+를 표시한다.
+
+---
+
+# 20. 보험 시스템
+
+Incoterms와 연결한다.
+
+CIF / CIP 등 보험이 포함되는 조건에서는 보험료를 자동 계산한다.
+
+보험이 포함되지 않는 조건에서는 사용자가 별도로 보험 가입 여부를 선택할 수 있다.
+
+보험료율은 시나리오마다 다르게 설정할 수 있도록 한다.
+
+예:
+
+0.2%
+
+0.3%
+
+0.5%
+
+보험금액은 시뮬레이션 규칙에 따라 계산한다.
+
+현재 구현되어 있는 계산 로직을 유지하되, 특정 거래 하나에 종속되지 않도록 리팩터링한다.
+
+---
+
+# 21. 비용 시스템
+
+모든 거래에서 다음 비용 항목을 사용할 수 있도록 한다.
+
+### PRODUCT COST
+
+제품 원가
+
+### DOMESTIC TRANSPORT
+
+내륙운송비
+
+### EXPORT CLEARANCE
+
+수출통관비
+
+### TERMINAL / HANDLING
+
+터미널 및 취급 비용
+
+### MAIN FREIGHT
+
+주운송비
+
+### INSURANCE
+
+보험료
+
+### IMPORT CLEARANCE
+
+수입통관비
+
+### DUTY
+
+관세
+
+### DESTINATION DELIVERY
+
+목적지 운송비
+
+모든 비용이 모든 Incoterms에서 발생하는 것은 아니다.
+
+**선택한 Incoterms에 따라 Seller Cost / Buyer Cost를 자동으로 구분한다.**
+
+---
+
+# 22. Seller Cost / Buyer Cost 시각화
+
+비용 계산 화면에:
+
+## SELLER
+
+총 부담비용
+
+₩XX,XXX,XXX
+
+---
+
+## BUYER
+
+총 부담비용
+
+₩XX,XXX,XXX
+
+를 보여준다.
+
+그리고:
+
+### TOTAL TRADE COST
+
+전체 거래에 들어가는 비용
+
+도 별도로 보여준다.
+
+이렇게 하면 Incoterms를 선택했을 때 비용 부담 구조가 실제로 어떻게 달라지는지 체감할 수 있다.
+
+---
+
+# 23. 관세 시스템
+
+DDP 등의 조건을 제대로 체험할 수 있도록 간단한 관세 시스템을 만든다.
+
+각 시나리오에:
+
+dutyRate
+
+를 저장한다.
+
+예:
+
+3%
+
+5%
+
+8%
+
+사용자가 DDP를 선택하면 시뮬레이션상 수입관세 부담이 Seller 측 비용에 포함되도록 한다.
+
+단, 실제 국가별 관세율을 제공하는 서비스라고 오해하지 않도록:
+
+> **Simulation Data**
+
+라는 표시를 붙인다.
+
+---
+
+# 24. 무역 리스크 이벤트 시스템
+
+거래를 진행하는 도중 랜덤 또는 시나리오 기반 이벤트가 발생하도록 구조를 만든다.
+
+예:
+
+### 🚢 PORT DELAY
+
+항구에서 예상치 못한 지연이 발생했습니다.
+
+결과:
+
++3 days
+
++₩500,000
+
+---
+
+### 💱 FX CHANGE
+
+환율이 변경되었습니다.
+
+1 USD = ₩1,380
+→
+1 USD = ₩1,420
+
+---
+
+### 📄 DOCUMENT ERROR
+
+선적서류에서 오류가 발견되었습니다.
+
+수정 비용:
+₩300,000
+
+---
+
+### 📦 CARGO DAMAGE
+
+화물 일부가 손상되었습니다.
+
+보험 가입 여부에 따라 결과가 달라진다.
+
+---
+
+### 🚢 FREIGHT SURCHARGE
+
+운임이 상승했습니다.
+
+---
+
+# 25. 이벤트를 시나리오와 연결
+
+모든 거래에서 동일한 이벤트가 발생하면 안 된다.
+
+각 Scenario에:
+
+availableEvents
+
+를 설정할 수 있게 한다.
+
+예:
+
+Korea → USA Auto Parts
+
+* Port Delay
+* Freight Surcharge
+* FX Change
+
+Korea → Japan Electronics
+
+* FX Change
+* Document Error
+
+USA → Korea Semiconductor Equipment
+
+* Air Freight Delay
+* Cargo Damage
+* FX Change
+
+등으로 구성한다.
+
+---
+
+# 26. 난이도 시스템
+
+거래마다 난이도를 가진다.
+
+### EASY
+
+기본적인 거래.
+
+### NORMAL
+
+조건이 조금 복잡함.
+
+### HARD
+
+환율, 운송, 결제, 보험을 동시에 고려해야 함.
+
+### EXPERT
+
+Incoterms와 운송방식의 적합성, 비용, 리스크, 이벤트까지 모두 고려해야 함.
+
+난이도를 결과 점수에 반영할 필요는 없지만 사용자에게 표시한다.
+
+---
+
+# 27. 거래 목적 다양화
+
+단순히 “수출”만 하지 않는다.
+
+시나리오 유형:
+
+### EXPORT
+
+수출
+
+### IMPORT
+
+수입
+
+향후:
+
+### TRIANGULAR TRADE
+
+삼각무역
+
+### MULTIMODAL TRADE
+
+복합운송
+
+등을 추가할 수 있도록 데이터 구조를 설계한다.
+
+MVP에서는 EXPORT / IMPORT 중심으로 구현한다.
+
+---
+
+# 28. Scenario 선택 화면에 Filter 추가
+
+사용자가 거래를 쉽게 찾을 수 있도록 필터를 제공한다.
+
+### REGION
+
+Asia
+North America
+Europe
+Middle East
+
+### MODE
+
+Sea
+Air
+Road
+Multimodal
+
+### DIFFICULTY
+
+Easy
+Normal
+Hard
+Expert
+
+### TRADE TYPE
+
+Export
+Import
+
+### PRODUCT
+
+Electronics
+Automotive
+Food
+Machinery
+Textile
+etc.
+
+---
+
+# 29. Search
+
+거래 시나리오가 많아졌을 때를 대비해 검색창을 만든다.
+
+예:
+
+Search trade...
+
+사용자가:
+
+Japan
+
+이라고 입력하면 일본 관련 거래가 표시된다.
+
+Electronics
+
+라고 입력하면 전자제품 관련 거래가 표시된다.
+
+---
+
+# 30. 거래 완료 후 결과 저장 구조
+
+로그인은 구현하지 않지만 현재 세션에서 완료한 거래를 기록한다.
+
+예:
+
+MY TRADE HISTORY
+
+1.
+
+Korea → USA
+Automotive Parts
+Score: 82
+
+2.
+
+Korea → Japan
+Electronics
+Score: 91
+
+3.
+
+Germany → Korea
+Machinery
+Score: 74
+
+localStorage를 사용해도 된다.
+
+---
+
+# 31. Trade History UI
+
+홈 화면 또는 별도의:
+
+### MY TRADES
+
+메뉴를 만든다.
+
+각 거래에:
+
+* Route
+* Product
+* Incoterms
+* Score
+* Profit
+* Date
+
+를 표시한다.
+
+사용자가 이전 거래 결과를 다시 볼 수 있도록 한다.
+
+---
+
+# 32. Achievement 시스템
+
+간단한 업적 시스템을 추가할 수 있는 구조를 만든다.
+
+예:
+
+### FIRST DEAL
+
+첫 거래 완료
+
+### GLOBAL TRADER
+
+5개 국가와 거래
+
+### INCOTERMS MASTER
+
+11개 Incoterms를 모두 사용
+
+### RISK MANAGER
+
+Risk Event 3회 성공적으로 대응
+
+### PROFIT MAKER
+
+최고 수익 거래 달성
+
+MVP에서는 기본 업적 몇 개만 구현한다.
+
+---
+
+# 33. Incoterms Master 업적
+
+특히 중요.
+
+사용자가 11개 Incoterms를 모두 한 번씩 사용하면:
+
+🏆
+
+## INCOTERMS MASTER
+
+> 11개 거래조건을 모두 경험했습니다.
+
+를 표시한다.
+
+이를 통해 사용자가 여러 번 플레이할 이유를 만든다.
+
+---
+
+# 34. 결과 화면 개선
+
+기존 RESULT 화면을 확장한다.
+
+결과에는:
+
+### TRADE SCORE
+
+82 / 100
+
+### PROFIT
+
+₩XX,XXX,XXX
+
+### SELLER COST
+
+₩XX,XXX,XXX
+
+### BUYER COST
+
+₩XX,XXX,XXX
+
+### PAYMENT RISK
+
+LOW
+
+### LOGISTICS RISK
+
+MEDIUM
+
+### INCOTERMS FIT
+
+GOOD
+
+를 표시한다.
+
+---
+
+# 35. Incoterms 적합성 점수
+
+선택한 거래조건과 운송방식, 거래구조를 기반으로:
+
+### INCOTERMS FIT
+
+Excellent
+Good
+Review Required
+Mismatch
+
+중 하나를 보여준다.
+
+예:
+
+FOB + Sea
+
+→ GOOD
+
+FOB + Air
+
+→ MISMATCH
+
+FCA + Air
+
+→ GOOD
+
+CIF + Sea
+
+→ GOOD
+
+이 로직은 단순한 문자열 비교가 아니라 **Incoterms의 적용 운송방식 데이터**를 기준으로 구현한다.
+
+---
+
+# 36. 교육용 설명
+
+잘못된 선택을 했을 경우:
+
+❌ WRONG
+
+이라고 단순 표시하지 않는다.
+
+대신:
+
+### REVIEW REQUIRED
+
+현재 선택:
+
+FOB + AIR
+
+문제:
+
+FOB는 해상 및 내수로 운송에 사용하는 조건입니다.
+
+추천:
+
+FCA
+
+그리고:
+
+**WHY?**
+
+버튼을 누르면 짧은 설명이 나타난다.
+
+---
+
+# 37. “정답 하나” 구조를 피한다
+
+매우 중요.
+
+실제 무역에서는 상황에 따라 여러 선택이 가능하므로 모든 거래를:
+
+정답 / 오답
+
+으로 지나치게 단순화하지 않는다.
+
+대신:
+
+### BEST FIT
+
+### ACCEPTABLE
+
+### RISKY
+
+### NOT SUITABLE
+
+등으로 평가한다.
+
+예를 들어 CIF를 선택했다고 무조건 정답이라고 하지 않는다.
+
+거래조건과 운송방식, 비용, 위험을 종합적으로 평가한다.
+
+---
+
+# 38. 시뮬레이션 데이터와 실제 무역정보 구분
+
+UI에 작은:
+
+**SIMULATION**
+
+또는
+
+**SIMULATION DATA**
+
+Badge를 표시한다.
+
+현재 운임, 환율, 관세율 등이 실제 시장 데이터가 아니라 교육용 가상 데이터임을 명확히 한다.
+
+---
+
+# 39. 실제 데이터를 나중에 연결할 수 있는 구조
+
+현재는 API를 사용하지 않는다.
+
+하지만 나중에:
+
+* 환율 API
+* 항구 정보 API
+* 운임 API
+* 관세 데이터
+* 날씨/항만 데이터
+
+등을 연결할 수 있도록 data layer와 simulation layer를 분리한다.
+
+예:
+
+```text
+simulationData
+↓
+tradeEngine
+↓
+UI
+```
+
+실제 API를 연결할 경우:
+
+```text
+API Data
+↓
+tradeEngine
+↓
+UI
+```
+
+구조로 교체할 수 있게 한다.
+
+---
+
+# 40. 데이터 구조 예시
+
+각 Scenario는 최소 다음 정보를 가질 수 있도록 설계한다.
+
+```javascript
+{
+  id: "kr-us-auto",
+  title: "Korea → USA Automotive Parts",
+
+  sellerCountry: "KR",
+  buyerCountry: "US",
+
+  originPorts: [...],
+  destinationPorts: [...],
+
+  product: {
+    name: "Automotive Parts",
+    category: "Automotive",
+    weight: ...,
+    volume: ...
+  },
+
+  contract: {
+    amount: 100000,
+    currency: "USD"
+  },
+
+  availableTransportModes: [
+    "SEA",
+    "AIR",
+    "ROAD",
+    "MULTIMODAL"
+  ],
+
+  availableIncoterms: [
+    "EXW",
+    "FCA",
+    "CPT",
+    "CIP",
+    "DAP",
+    "DPU",
+    "DDP",
+    "FAS",
+    "FOB",
+    "CFR",
+    "CIF"
+  ],
+
+  paymentOptions: [
+    "TT",
+    "LC",
+    "DP",
+    "DA"
+  ],
+
+  insuranceRate: 0.003,
+
+  dutyRate: 0.05,
+
+  exchangeRate: 1380,
+
+  difficulty: "EASY",
+
+  availableEvents: [...]
+}
+```
+
+실제 구현에서는 프로젝트의 기존 데이터 구조에 맞춰 가장 적절한 TypeScript interface/type을 설계한다.
+
+---
+
+# 41. UI는 기존 ON BOARD 디자인을 유지
+
+기존에 만들어진 ON BOARD의 디자인 시스템을 유지한다.
+
+핵심:
+
+* Deep Navy
+* White
+* Light Gray
+* Blue Accent
+* Professional Dashboard
+* Global Trade
+* Minimal UI
+
+새로운 기능이 많아져도 화면이 복잡해 보이지 않도록 한다.
+
+---
+
+# 42. 새로운 Home 구조
+
+Home을 다음과 같이 개선한다.
+
+상단:
+
+ON BOARD
+
+TRADE SIMULATOR
+
+메인:
+
+# 무역거래에 직접 올라타다.
+
+> Choose a trade. Make your decisions. Close the deal.
+
+CTA:
+
+### START NEW TRADE →
+
+그 아래:
+
+### EXPLORE TRADES
+
+시나리오 카드 일부 표시.
+
+그리고:
+
+### YOUR PROGRESS
+
+Trades Completed
+12
+
+Countries
+6
+
+Incoterms Used
+8 / 11
+
+Best Score
+94
+
+를 표시한다.
+
+---
+
+# 43. Trade Selection 화면의 핵심 UX
+
+거래 카드에서 사용자가 한눈에:
+
+🇰🇷 → 🇺🇸
+
+Automotive Parts
+
+Busan → Los Angeles
+
+SEA
+
+USD 100K
+
+★★☆☆☆
+
+를 볼 수 있어야 한다.
+
+카드를 클릭하면 상세 정보가 펼쳐지고:
+
+### TRADE BRIEF
+
+You are exporting automotive parts from Korea to the United States.
+
+Your objective:
+
+**Maximize profit while managing trade risk.**
+
+버튼:
+
+START TRADE →
+
+---
+
+# 44. 거래 진행 중 항상 현재 거래 정보를 보여준다
+
+Simulation 화면의 사이드바 또는 상단에:
+
+CURRENT TRADE
+
+🇰🇷 Korea
+↓
+🇺🇸 USA
+
+Automotive Parts
+
+USD 100,000
+
+INCOTERMS
+FOB
+
+TRANSPORT
+SEA
+
+PAYMENT
+L/C
+
+를 표시한다.
+
+사용자가 지금까지 어떤 선택을 했는지 항상 확인할 수 있어야 한다.
+
+---
+
+# 45. Back Navigation
+
+사용자가 이전 단계로 돌아가 선택을 변경할 수 있도록 한다.
+
+예:
+
+Incoterms를 FOB에서 CIF로 변경하면:
+
+* Insurance
+* Seller Cost
+* Buyer Cost
+* Profit
+* Score
+
+등 관련 결과가 자동으로 업데이트되어야 한다.
+
+---
+
+# 46. 상태 관리
+
+거래 진행 상태는 하나의 중앙 상태로 관리한다.
+
+예:
+
+```text
+selectedScenario
+selectedOrigin
+selectedDestination
+selectedProduct
+selectedIncoterms
+selectedTransport
+selectedContainer
+selectedPayment
+insurance
+exchangeRate
+events
+costs
+score
+```
+
+단계별 컴포넌트에서 직접 서로의 상태를 조작하지 말고 중앙 trade state를 사용한다.
+
+---
+
+# 47. 계산 엔진
+
+계산 로직을 UI와 완전히 분리한다.
+
+예:
+
+```text
+calculateInsurance()
+calculateFreight()
+calculateSellerCost()
+calculateBuyerCost()
+calculateTotalCost()
+calculateProfit()
+calculateRisk()
+calculateIncotermsFit()
+calculateScore()
+```
+
+이렇게 함수를 분리한다.
+
+새로운 Scenario를 추가해도 계산 엔진은 재사용할 수 있어야 한다.
+
+---
+
+# 48. 중요한 정확성 원칙
+
+무역 시뮬레이터이므로 **Incoterms 관련 로직을 임의로 만들지 않는다.**
+
+특히 다음 사항은 정확하게 구분한다.
+
+* 11개 Incoterms의 공식 명칭
+* 운송방식 적용 범위
+* 위험 이전
+* 운송비 부담
+* 보험 부담
+* 수출통관
+* 수입통관
+* 관세
+* DPU의 unloading
+* DDP의 수입통관/관세 부담
+
+UI에서 교육적으로 단순화하더라도 실제 개념을 반대로 설명하면 안 된다.
+
+---
+
+# 49. MVP 확장 완료 기준
+
+다음이 모두 작동해야 한다.
+
+### Scenario
+
+최소 8개 거래
+
+### Countries
+
+최소 7개 국가
+
+### Ports
+
+20개 이상의 항구
+
+### Products
+
+10개 이상의 품목
+
+### Incoterms
+
+**11개 전체**
+
+### Transport
+
+Sea
+Air
+Road
+Rail
+Multimodal
+
+### Payment
+
+T/T
+L/C
+D/P
+D/A
+
+### Insurance
+
+지원
+
+### Currency
+
+KRW
+USD
+EUR
+JPY
+CNY
+VND
+AED
+
+### Events
+
+최소 5종
+
+### Difficulty
+
+Easy
+Normal
+Hard
+Expert
+
+### Trade History
+
+지원
+
+### Achievement
+
+기본 업적 지원
+
+---
+
+# 50. 절대 하지 말아야 할 것
+
+1. 한국→미국 거래에만 하드코딩하지 않는다.
+
+2. USD/KRW만 사용하지 않는다.
+
+3. FOB/CIF 등 일부 Incoterms만 제공하지 않는다.
+
+4. 11개 Incoterms를 단순히 이름만 추가하지 않는다.
+
+5. 모든 Incoterms를 모든 운송방식에서 사용할 수 있게 만들지 않는다.
+
+6. 실제 무역 개념과 다른 설명을 만들지 않는다.
+
+7. 모든 선택을 정답/오답으로 지나치게 단순화하지 않는다.
+
+8. 실제 운임/환율/관세 데이터처럼 표시하지 않는다.
+
+9. 새로운 기능 때문에 기존 ON BOARD의 깔끔한 UI가 복잡해지지 않게 한다.
+
+10. 새로운 기능을 한 화면에 모두 집어넣지 않는다.
+
+---
+
+# 51. 개발 순서
+
+한 번에 모든 것을 무리하게 구현하지 말고 다음 순서로 작업한다.
+
+### PHASE 1
+
+현재 코드 구조 분석
+
+↓
+
+Scenario Data 구조 설계
+
+↓
+
+Trade Engine 분리
+
+### PHASE 2
+
+Scenario Selection 구현
+
+↓
+
+국가 / 항구 / 품목 데이터 추가
+
+### PHASE 3
+
+11개 Incoterms 데이터 및 로직 구현
+
+↓
+
+Transport Compatibility 구현
+
+### PHASE 4
+
+결제 / 보험 / 환율 / 비용 계산 확장
+
+### PHASE 5
+
+Risk Event 구현
+
+### PHASE 6
+
+Result / Trade History / Achievement 구현
+
+### PHASE 7
+
+전체 UI/UX 정리
+
+---
+
+# 52. 최종 목표
+
+ON BOARD가 최종적으로 다음과 같은 서비스가 되도록 만들어줘.
+
+사용자가 앱에 들어온다.
+
+↓
+
+**CHOOSE YOUR TRADE**
+
+↓
+
+🇰🇷 Korea → 🇯🇵 Japan
+
+Electronics
+
+↓
+
+항구 선택
+
+↓
+
+운송 선택
+
+↓
+
+Incoterms 선택
+
+↓
+
+결제조건 선택
+
+↓
+
+보험 선택
+
+↓
+
+환율 확인
+
+↓
+
+비용 계산
+
+↓
+
+예상하지 못한 무역 이벤트 발생
+
+↓
+
+사용자가 대응
+
+↓
+
+거래 완료
+
+↓
+
+**DEAL CLOSED**
+
+↓
+
+Trade Score
+
+↓
+
+Profit
+
+↓
+
+Risk Analysis
+
+↓
+
+Trade Review
+
+↓
+
+다음 거래 선택
+
+---
+
+# 53. 핵심 철학
+
+ON BOARD는 단순한:
+
+> **무역 계산기**
+
+가 아니다.
+
+또한 단순한:
+
+> **무역영어 퀴즈 앱**
+
+도 아니다.
+
+목표는:
+
+> **“내가 실제 무역 담당자라면 어떤 결정을 내려야 할까?”**
+
+를 경험하는 것이다.
+
+사용자가 여러 국가와 여러 품목을 거래하고, 11개의 Incoterms를 직접 사용해보며, 운송·결제·보험·환율·비용·리스크 사이의 관계를 이해할 수 있는 **Trade Simulation Platform**으로 발전시켜줘.
+
+기존 ON BOARD의 기능과 디자인을 먼저 분석한 뒤, 기존 기능을 깨뜨리지 않는 방식으로 확장한다.
+
+**코드보다 데이터 구조와 재사용성을 우선한다.**
+
+새로운 거래를 추가할 때 UI 코드를 수정하지 않고 Scenario Data만 추가해도 새로운 거래가 생성될 수 있는 구조를 최우선으로 한다.
+
+마지막으로 실제로 다음 테스트를 수행한다.
+
+1. Korea → USA 거래 완료
+2. Korea → Japan 거래 완료
+3. Germany → Korea 거래 완료
+4. FOB + Sea 정상 작동
+5. FOB + Air 경고 작동
+6. CIF + Sea 보험 자동 계산
+7. DDP에서 수입통관/관세 비용 반영
+8. 11개 Incoterms 모두 선택 가능
+9. 환율 변경 시 비용/이익 변경
+10. 항구 변경 시 운송비 변경
+11. 거래 완료 후 History 저장
+12. 모바일 화면에서 모든 거래 과정 정상 작동
+
+모든 테스트를 완료하고 기존 기능에 오류가 없는 상태로 마무리해줘.

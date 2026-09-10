@@ -1,0 +1,78 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", "Apple SD Gothic Neo", "Noto Sans KR", ui-sans-serif, system-ui, sans-serif;
+  --color-navy: #0b1f33;
+  --color-navy-2: #163a5f;
+  --color-accent: #2563eb;
+  --color-bg: #f5f7fa;
+  --color-line: #e5e7eb;
+  --color-ink: #111827;
+  --color-muted: #6b7280;
+  --color-ok: #16a34a;
+  --color-warn: #d97706;
+  --color-danger: #dc2626;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background: #f5f7fa;
+  color: #111827;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+body::before {
+  content: "";
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image: radial-gradient(rgba(11, 31, 51, 0.04) 0.7px, transparent 0.7px);
+  background-size: 22px 22px;
+}
+
+button,
+input {
+  font-family: inherit;
+}
+
+@keyframes ob-fade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.ob-fade {
+  animation: ob-fade 280ms ease-out;
+}
+
+@keyframes ob-reveal {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.ob-reveal {
+  animation: ob-reveal 420ms ease-out;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
