@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="56" viewBox="0 0 720 112" fill="none">
+  <circle cx="42" cy="40" r="26" stroke="#0B1F33" stroke-width="12"/>
+  <path d="M8 58c16-8 32-26 58-42" stroke="#2563EB" stroke-width="9" stroke-linecap="round"/>
+  <path d="M58 4l26 6-14 16z" fill="#2563EB"/>
+  <g fill="#0B1F33" font-family="Inter, Arial, Helvetica, sans-serif" font-size="48" font-weight="800">
+    <text x="86" y="58">N</text>
+    <text x="138" y="58">B</text>
+    <text x="188" y="58">O</text>
+    <text x="312" y="58">R</text>
+    <text x="360" y="58">D</text>
+  </g>
+  <path d="M252 18l24 40H228z" fill="#2563EB"/>
+  <text x="86" y="96" fill="#6B7280" font-family="Inter, Arial, Helvetica, sans-serif" font-size="16" font-weight="600" letter-spacing="8">TRADE SIMULATOR</text>
+</svg>
