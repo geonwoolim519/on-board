@@ -1,4 +1,4 @@
-const CACHE = 'on-board-v1'
+const CACHE = 'on-board-v2'
 
 self.addEventListener('install', (event) => {
   event.waitUntil(self.skipWaiting())
